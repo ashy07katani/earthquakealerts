@@ -81,7 +81,7 @@ export default class App extends Component {
   };
 
 
-  count=0
+
   prevFrom = 1
   TODAY = new Date()
   FROMDAY = new Date(this.TODAY.getTime() - 24*60*60*1000)
@@ -94,12 +94,12 @@ export default class App extends Component {
       mapProps : {...quakeProp}
     })
     //this.myRef.current.flyTo method gives you the freedom to add the animation 
-    console.log("FLYY ME TO THE MOON",this.myRef.current.flyTo([...this.state.mapProps.center],this.state.mapProps.zoom),{duration:2})
+    console.log("yo babby",this.myRef.current.flyTo([...this.state.mapProps.center],this.state.mapProps.zoom),{duration:2})
   }
 
   onChangeDate = (day)=>
   {
-    //console.log("inside on changeDate")
+    console.log("inside on changeDate")
       // this.fetchData(day)
       this.setState({
         from : day
@@ -164,29 +164,17 @@ export default class App extends Component {
     let data = await fetch(URL);
     let parsedData = await data.json();
     let distanceDone = true
-    //console.log("here is the parsedData",parsedData)
+    console.log("here is the parsedData",parsedData)
     navigator.geolocation.getCurrentPosition((position)=>{
 
-      //console.log(position.coords.latitude,position.coords.longitude)
-    //generate alert for closest city for its recent earthquake.
-    let closestDist = Number.MAX_SAFE_INTEGER
-    let closestCity = null
+      console.log(position.coords.latitude,position.coords.longitude)
       parsedData.features.map((city)=>{
         //console.log("no hello",city)
         city["distance"] = this.getDistanceFromLatLonInKm(city.geometry.coordinates[1],city.geometry.coordinates[0],position.coords.latitude,position.coords.longitude)
         
-        //city["distance"] < 500 && ((new Date().getTime() - city.properties.time)/(60000)) > 60 && !this.state.alert ? this.setState({alert:`EarthQuake Warning!!! : ${city.properties.title}`}) : console.log("no alert")
-        if(closestDist > city["distance"])
-        {
-          closestDist = city["distance"]
-          closestCity  =  city.properties
-        }
+        city["distance"] > 2000 && ((new Date().getTime() - city.properties.time)/(60000)) > 800 && !this.state.alert ? this.setState({alert:`EarthQuake Warning!!! : ${city.properties.title}`}) : this.setState({alert:null})
       })
-      //console.log("closestCity: ",closestCity)
-      //console.log("time elapsed: ",(new Date().getTime() - closestCity.time)/(3600000))
-      if((!this.state.alert && (new Date().getTime() - closestCity.time)/(60000)) < 5 ) 
-      {this.setState({alert:`EarthQuake Warning!!! : ${closestCity.title}`})}
-      //console.log(parsedData.features[0].distance)
+      console.log(parsedData.features[0].distance)
       distanceDone = false
       this.setState({
         earthquakes: parsedData.features,
@@ -199,18 +187,14 @@ export default class App extends Component {
       });
       
     })
-    {setTimeout(()=>{
-      if(this.state.alert)
-      {//console.log("taking notification down!!");
-      this.setState({alert:null})}}
-      ,5000) }
+    setTimeout(()=>{console.log("taking notification down!!");this.setState({alert:null})},20000)
   }
   async componentDidMount() {
     this.setState({
       loading:true
     })
     
-    //console.log("component did mount called")
+    console.log("component did mount called")
 
     await this.fetchData(this.state.from)
     // let data = await fetch(this.URL);
@@ -234,25 +218,20 @@ export default class App extends Component {
     // {
     //   setTimeout(()=>{console.log("taking notification down!!");this.setState({alert:null})},1000)
     // }
-    
-    setInterval(() => {
-      this.fetchData(this.state.from)
-      //console.log("counter :",++this.count)
-    }, 300000);
+    setInterval(() => this.fetchData(this.state.from), 600000);
     
   }
 
    componentDidUpdate =async ()=>{
       if(this.prevFrom !== this.state.from)
       {
-        //console.log("prev state: ",this.prevFrom,"current state",this.state.from)
         await this.fetchData(this.state.from)
         this.prevFrom = this.state.from
       }
   }
 
   render() {
-     //console.log("RENDER METHOD IS CALLED!!!")
+    //console.log(this.URL)
     return (
       <Router>
       
@@ -271,7 +250,7 @@ export default class App extends Component {
 
         {/*map container */}
         <div className="container" style={{position:"relative",height:"100%", paddingLeft:"1px",paddingRight:"0"}}>
-        {/* {console.log(this.state.mapProps.center,this.state.mapProps.zoom)} */}
+        {console.log(this.state.mapProps.center,this.state.mapProps.zoom)}
         <Routes>
         <Route exact path="/" element={
         !this.state.loading&&<MapContainer
